@@ -48,7 +48,8 @@ export function listByLogsource(params: ListByLogsourceParams): RuleSummary[] {
   }
 
   const rows = db
-    .prepare<RuleByLogsourceRow>(`
+    .prepare<RuleByLogsourceRow>(
+      `
       SELECT
         r.id,
         r.title,
@@ -62,7 +63,8 @@ export function listByLogsource(params: ListByLogsourceParams): RuleSummary[] {
       WHERE ${clauses.join(' AND ')}
       ORDER BY r.id
       LIMIT @limit OFFSET @offset
-    `)
+    `
+    )
     .all(values);
 
   return rows.map((row) => ({

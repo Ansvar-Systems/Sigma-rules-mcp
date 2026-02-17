@@ -217,7 +217,10 @@ function errorResponse(message: string): ToolResult {
   };
 }
 
-export async function handleToolCall(name: string, args: Record<string, unknown>): Promise<ToolResult> {
+export async function handleToolCall(
+  name: string,
+  args: Record<string, unknown>
+): Promise<ToolResult> {
   switch (name) {
     case 'search_rules': {
       const query = args.query;

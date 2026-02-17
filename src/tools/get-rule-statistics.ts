@@ -36,14 +36,16 @@ function topLogsource(field: 'logsource_product' | 'logsource_service' | 'logsou
   const db = getDatabase();
 
   return db
-    .prepare<LogsourceCoverageRow>(`
+    .prepare<LogsourceCoverageRow>(
+      `
       SELECT ${field} AS value, COUNT(*) AS count
       FROM rules
       WHERE ${field} IS NOT NULL AND ${field} <> ''
       GROUP BY ${field}
       ORDER BY count DESC, value ASC
       LIMIT 20
-    `)
+    `
+    )
     .all();
 }
 
@@ -51,7 +53,8 @@ export function getRuleStatistics(): RuleStatistics {
   const db = getDatabase();
 
   const tacticCoverage = db
-    .prepare<TacticCoverageRow>(`
+    .prepare<TacticCoverageRow>(
+      `
       SELECT
         t.tactic_id,
         COUNT(DISTINCT t.rule_id) AS rule_count,
@@ -60,16 +63,19 @@ export function getRuleStatistics(): RuleStatistics {
       LEFT JOIN rule_techniques rt ON rt.rule_id = t.rule_id
       GROUP BY t.tactic_id
       ORDER BY rule_count DESC, t.tactic_id ASC
-    `)
+    `
+    )
     .all();
 
   const licenses = db
-    .prepare<LicenseRow>(`
+    .prepare<LicenseRow>(
+      `
       SELECT license, COUNT(*) AS count
       FROM rules
       GROUP BY license
       ORDER BY count DESC, license ASC
-    `)
+    `
+    )
     .all();
 
   return {

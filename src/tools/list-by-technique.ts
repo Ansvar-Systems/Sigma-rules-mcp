@@ -28,7 +28,8 @@ export function listByTechnique(params: ListByTechniqueParams): {
   const offset = Math.max(params.offset ?? 0, 0);
 
   const rows = db
-    .prepare<RuleByTechniqueRow>(`
+    .prepare<RuleByTechniqueRow>(
+      `
       SELECT
         r.id,
         r.title,
@@ -43,7 +44,8 @@ export function listByTechnique(params: ListByTechniqueParams): {
       WHERE rt.technique_id = @technique_id
       ORDER BY r.id
       LIMIT @limit OFFSET @offset
-    `)
+    `
+    )
     .all({ technique_id: techniqueId, limit, offset });
 
   return {

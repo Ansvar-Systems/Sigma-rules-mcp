@@ -49,9 +49,9 @@ export interface SigmaRule {
 
 export function getRule(ruleId: string): SigmaRule | null {
   const db = getDatabase();
-  const rule = db.prepare<RuleRow>(
-    `SELECT * FROM rules WHERE id = @rule_id LIMIT 1`
-  ).get({ rule_id: ruleId.trim() });
+  const rule = db
+    .prepare<RuleRow>(`SELECT * FROM rules WHERE id = @rule_id LIMIT 1`)
+    .get({ rule_id: ruleId.trim() });
 
   if (!rule) {
     return null;

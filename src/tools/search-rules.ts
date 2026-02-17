@@ -30,7 +30,10 @@ interface SearchRow {
   rank: number;
 }
 
-function baseFilters(params: SearchRulesParams): { clauses: string[]; values: Record<string, unknown> } {
+function baseFilters(params: SearchRulesParams): {
+  clauses: string[];
+  values: Record<string, unknown>;
+} {
   const clauses: string[] = [];
   const values: Record<string, unknown> = {};
 
@@ -72,7 +75,8 @@ export function searchRules(params: SearchRulesParams): SearchRuleResult[] {
 
   try {
     const rows = db
-      .prepare<SearchRow>(`
+      .prepare<SearchRow>(
+        `
         SELECT
           r.id,
           r.title,
@@ -90,7 +94,8 @@ export function searchRules(params: SearchRulesParams): SearchRuleResult[] {
         ${where}
         ORDER BY rank, r.id
         LIMIT @limit OFFSET @offset
-      `)
+      `
+      )
       .all({
         query: params.query.trim(),
         limit,
@@ -114,7 +119,8 @@ export function searchRules(params: SearchRulesParams): SearchRuleResult[] {
     }));
   } catch {
     const rows = db
-      .prepare<SearchRow>(`
+      .prepare<SearchRow>(
+        `
         SELECT
           r.id,
           r.title,
@@ -131,7 +137,8 @@ export function searchRules(params: SearchRulesParams): SearchRuleResult[] {
         ${where ? `AND ${clauses.join(' AND ')}` : ''}
         ORDER BY r.id
         LIMIT @limit OFFSET @offset
-      `)
+      `
+      )
       .all({
         pattern: `%${params.query.trim().toLowerCase()}%`,
         limit,

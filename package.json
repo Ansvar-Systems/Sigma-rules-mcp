@@ -29,6 +29,8 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "lint": "eslint src/ api/ scripts/",
+    "format": "prettier --write 'src/**/*.ts' 'api/**/*.ts' 'scripts/**/*.ts'",
+    "format:check": "prettier --check 'src/**/*.ts' 'api/**/*.ts' 'scripts/**/*.ts'",
     "ci": "npm run check:db-size && npm run build && npm test"
   },
   "keywords": [
@@ -62,6 +64,7 @@
     "@vercel/node": "^5.6.3",
     "@vitest/coverage-v8": "^4.0.18",
     "eslint": "^10.0.0",
+    "prettier": "^3.8.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"

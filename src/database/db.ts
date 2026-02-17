@@ -18,7 +18,7 @@ export function getDatabase(): InstanceType<typeof Database> {
     } catch (error) {
       throw new Error(
         `Database not found at ${DB_PATH}. Run "npm run build:db" to ingest Sigma rules.` +
-        ` Original error: ${error instanceof Error ? error.message : String(error)}`
+          ` Original error: ${error instanceof Error ? error.message : String(error)}`
       );
     }
   }
@@ -46,7 +46,9 @@ export interface DatabaseStats {
 
 export function getDatabaseStats(): DatabaseStats {
   const database = getDatabase();
-  const result = database.prepare<DatabaseStats>(`
+  const result = database
+    .prepare<DatabaseStats>(
+      `
     SELECT
       (SELECT COUNT(*) FROM rules) AS total_rules,
       (SELECT COUNT(DISTINCT rule_id) FROM rule_techniques) AS rules_with_techniques,
@@ -68,7 +70,9 @@ export function getDatabaseStats(): DatabaseStats {
         FROM rules
         WHERE logsource_category IS NOT NULL AND logsource_category <> ''
       ) AS unique_logsource_categories
-  `).get();
+  `
+    )
+    .get();
 
   if (!result) {
     throw new Error('Failed to retrieve database statistics: no rows returned');
@@ -87,9 +91,9 @@ export interface DatabaseMetadata {
 
 export function getDatabaseMetadata(): DatabaseMetadata {
   const database = getDatabase();
-  const rows = database.prepare<{ key: string; value: string }>(
-    'SELECT key, value FROM metadata'
-  ).all();
+  const rows = database
+    .prepare<{ key: string; value: string }>('SELECT key, value FROM metadata')
+    .all();
 
   const metadata: Partial<DatabaseMetadata> = {};
   for (const row of rows) {

@@ -27,8 +27,7 @@ function ensureDatabaseInTmp(): void {
     rmSync(TMP_DB_LOCK, { recursive: true, force: true });
   }
 
-  const shouldCopy =
-    !existsSync(TMP_DB) || statSync(SOURCE_DB).mtimeMs > statSync(TMP_DB).mtimeMs;
+  const shouldCopy = !existsSync(TMP_DB) || statSync(SOURCE_DB).mtimeMs > statSync(TMP_DB).mtimeMs;
 
   if (shouldCopy) {
     copyFileSync(SOURCE_DB, TMP_DB);

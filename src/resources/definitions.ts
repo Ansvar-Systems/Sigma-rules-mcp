@@ -75,9 +75,9 @@ function queryLogsourceField(
     .all();
 }
 
-export function handleResourceRead(
-  uri: string
-): { contents: Array<{ uri: string; mimeType: string; text: string }> } {
+export function handleResourceRead(uri: string): {
+  contents: Array<{ uri: string; mimeType: string; text: string }>;
+} {
   switch (uri) {
     case 'sigma://logsources/products':
       return {

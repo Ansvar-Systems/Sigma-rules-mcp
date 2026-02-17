@@ -385,7 +385,9 @@ async function buildDatabase(): Promise<void> {
       insertTx(rule);
       inserted += 1;
     } catch (error) {
-      failures.push(`${relative(SIGMA_REPO_PATH, file)}: ${error instanceof Error ? error.message : String(error)}`);
+      failures.push(
+        `${relative(SIGMA_REPO_PATH, file)}: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
   }
 
