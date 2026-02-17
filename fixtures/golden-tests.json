@@ -1,0 +1,119 @@
+[
+  {
+    "name": "search_rules returns results for 'mimikatz'",
+    "category": "search",
+    "tool": "search_rules",
+    "args": { "query": "mimikatz", "limit": 5 },
+    "assertions": [
+      { "type": "result_not_empty" },
+      { "type": "min_results", "value": 1 },
+      { "type": "any_result_contains", "values": ["mimikatz"] }
+    ]
+  },
+  {
+    "name": "search_rules returns results for 'powershell'",
+    "category": "search",
+    "tool": "search_rules",
+    "args": { "query": "powershell", "limit": 5 },
+    "assertions": [
+      { "type": "result_not_empty" },
+      { "type": "min_results", "value": 1 }
+    ]
+  },
+  {
+    "name": "search_rules returns results for 'lateral movement'",
+    "category": "search",
+    "tool": "search_rules",
+    "args": { "query": "lateral movement", "limit": 5 },
+    "assertions": [
+      { "type": "result_not_empty" }
+    ]
+  },
+  {
+    "name": "search_rules filters by status=stable",
+    "category": "search",
+    "tool": "search_rules",
+    "args": { "query": "windows", "status": "stable", "limit": 5 },
+    "assertions": [
+      { "type": "result_not_empty" }
+    ]
+  },
+  {
+    "name": "list_by_technique returns rules for T1059",
+    "category": "technique_lookup",
+    "tool": "list_by_technique",
+    "args": { "technique_id": "T1059", "limit": 5 },
+    "assertions": [
+      { "type": "result_not_empty" },
+      { "type": "min_results", "value": 1 },
+      { "type": "fields_present", "fields": ["technique_id", "total", "results"] }
+    ]
+  },
+  {
+    "name": "list_by_technique normalizes lowercase input",
+    "category": "technique_lookup",
+    "tool": "list_by_technique",
+    "args": { "technique_id": "attack.t1059", "limit": 5 },
+    "assertions": [
+      { "type": "result_not_empty" },
+      { "type": "text_contains", "values": ["T1059"] }
+    ]
+  },
+  {
+    "name": "list_by_logsource returns rules for product=windows",
+    "category": "logsource_lookup",
+    "tool": "list_by_logsource",
+    "args": { "product": "windows", "limit": 5 },
+    "assertions": [
+      { "type": "result_not_empty" },
+      { "type": "min_results", "value": 1 }
+    ]
+  },
+  {
+    "name": "list_by_logsource returns rules for category=process_creation",
+    "category": "logsource_lookup",
+    "tool": "list_by_logsource",
+    "args": { "category": "process_creation", "limit": 5 },
+    "assertions": [
+      { "type": "result_not_empty" },
+      { "type": "min_results", "value": 1 }
+    ]
+  },
+  {
+    "name": "get_rule_statistics returns comprehensive stats",
+    "category": "statistics",
+    "tool": "get_rule_statistics",
+    "args": {},
+    "assertions": [
+      { "type": "result_not_empty" },
+      { "type": "fields_present", "fields": ["overview", "metadata", "tactic_coverage", "top_logsource_products"] }
+    ]
+  },
+  {
+    "name": "get_rule with invalid UUID handles gracefully",
+    "category": "negative_test",
+    "tool": "get_rule",
+    "args": { "rule_id": "00000000-0000-0000-0000-000000000000" },
+    "assertions": [
+      { "type": "handles_gracefully" }
+    ]
+  },
+  {
+    "name": "list_by_logsource with no filters handles gracefully",
+    "category": "negative_test",
+    "tool": "list_by_logsource",
+    "args": {},
+    "assertions": [
+      { "type": "handles_gracefully" }
+    ]
+  },
+  {
+    "name": "search_rules with empty query handles gracefully",
+    "category": "negative_test",
+    "tool": "search_rules",
+    "args": { "query": "" },
+    "assertions": [
+      { "type": "handles_gracefully" }
+    ]
+  }
+]

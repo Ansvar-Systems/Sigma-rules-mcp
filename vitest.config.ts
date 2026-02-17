@@ -8,7 +8,7 @@ export default defineConfig({
     maxForks: 1,
     minForks: 1,
     setupFiles: ['./tests/setup.ts'],
-    include: ['tests/**/*.{test,spec}.ts'],
+    include: ['tests/**/*.{test,spec}.ts', '__tests__/**/*.{test,spec}.ts'],
     exclude: ['node_modules', 'dist'],
   },
 });
