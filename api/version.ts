@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const SERVER_VERSION = '0.1.0';
+const SERVER_VERSION = '0.2.0';
 
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   if (req.method && req.method !== 'GET') {

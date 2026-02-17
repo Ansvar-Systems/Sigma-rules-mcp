@@ -14,7 +14,7 @@ import { TOOLS, handleToolCall, SERVER_INSTRUCTIONS } from './tools/definitions.
 import { RESOURCES, handleResourceRead } from './resources/definitions.js';
 
 const SERVER_NAME = 'sigma-rules-mcp';
-const SERVER_VERSION = '0.1.0';
+const SERVER_VERSION = '0.2.0';
 
 const server = new Server(
   {

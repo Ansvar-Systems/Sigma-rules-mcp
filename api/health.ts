@@ -5,7 +5,7 @@ import { join } from 'path';
 const SOURCE_DB = process.env.SIGMA_RULES_DB_PATH || join(process.cwd(), 'data', 'sigma_rules.db');
 const TMP_DB = '/tmp/sigma_rules.db';
 const MAX_AGE_DAYS = 14;
-const SERVER_VERSION = '0.1.0';
+const SERVER_VERSION = '0.2.0';
 const startTime = Date.now();
 
 function ensureDb(): boolean {

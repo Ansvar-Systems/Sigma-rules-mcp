@@ -1,6 +1,6 @@
 {
   "name": "@ansvar/sigma-rules-mcp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Sigma Rules MCP server with full SigmaHQ rule coverage and ATT&CK/logsource tooling",
   "mcpName": "eu.ansvar/sigma-rules",
   "type": "module",

@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "sigma-rules-mcp",
   "display_name": "Sigma Rules MCP Server",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server for SigmaHQ rules with full-text search, ATT&CK mapping, and logsource filtering",
   "author": {
     "name": "Ansvar Systems",

@@ -42,7 +42,7 @@ function createServer(): Server {
   const server = new Server(
     {
       name: 'sigma-rules-mcp',
-      version: '0.1.0',
+      version: '0.2.0',
     },
     {
       capabilities: { tools: {}, resources: {} },
@@ -93,7 +93,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
   if (req.method === 'GET') {
     res.status(200).json({
       name: 'sigma-rules-mcp',
-      version: '0.1.0',
+      version: '0.2.0',
       protocol: 'mcp-streamable-http',
     });
     return;
