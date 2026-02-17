@@ -93,7 +93,7 @@ npm run test:coverage
 
 - bundle `data/sigma_rules.db`
 - bundle `node-sqlite3-wasm.wasm`
-- expose `/mcp -> /api/mcp` and `/health -> /api/health`
+- expose `/mcp -> /api/mcp`, `/health -> /api/health`, and `/version -> /api/version`
 
 The API function copies the bundled DB to `/tmp/sigma_rules.db` at runtime to avoid lock-dir issues with WASM SQLite.
 
