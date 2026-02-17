@@ -1,5 +1,10 @@
 # Sigma Rules MCP
 
+[![CI](https://github.com/Ansvar-Systems/sigma-rules-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Ansvar-Systems/sigma-rules-mcp/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Ansvar-Systems/sigma-rules-mcp/actions/workflows/codeql.yml/badge.svg)](https://github.com/Ansvar-Systems/sigma-rules-mcp/actions/workflows/codeql.yml)
+[![npm](https://img.shields.io/npm/v/@ansvar/sigma-rules-mcp)](https://www.npmjs.com/package/@ansvar/sigma-rules-mcp)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
 TypeScript MCP server that ingests the full [SigmaHQ/sigma](https://github.com/SigmaHQ/sigma) rule corpus into SQLite (WASM backend) and exposes focused tooling for detection engineering workflows.
 
 ## Scope
@@ -9,6 +14,14 @@ TypeScript MCP server that ingests the full [SigmaHQ/sigma](https://github.com/S
 - Storage: bundled SQLite DB (`data/sigma_rules.db`) for Vercel Strategy A
 - Runtime SQLite engine: `node-sqlite3-wasm` via `@ansvar/mcp-sqlite`
 
+## Data Sources
+
+| Source | Authority | Update Frequency | License | Portal |
+|--------|-----------|------------------|---------|--------|
+| SigmaHQ Detection Rules | SigmaHQ Community | Weekly (automated) | [DRL](https://github.com/SigmaHQ/sigma/blob/master/LICENSE.Detection.Rules.md) | [github.com/SigmaHQ/sigma](https://github.com/SigmaHQ/sigma) |
+
+See [`sources.yml`](sources.yml) for full metadata including coverage scope and retrieval method.
+
 ## Exposed MCP tools
 
 - `search_rules` - full-text search across rule titles/descriptions
@@ -16,6 +29,21 @@ TypeScript MCP server that ingests the full [SigmaHQ/sigma](https://github.com/S
 - `list_by_technique` - all rules mapped to ATT&CK technique id (`Txxxx`)
 - `list_by_logsource` - filter by `product` / `service` / `category`
 - `get_rule_statistics` - coverage stats, including ATT&CK tactic coverage
+
+## MCP Resources
+
+The server exposes browsable resources for dataset exploration:
+
+| Resource URI | Description |
+|---|---|
+| `sigma://logsources/products` | All distinct logsource products with rule counts |
+| `sigma://logsources/services` | All distinct logsource services with rule counts |
+| `sigma://logsources/categories` | All distinct logsource categories with rule counts |
+| `sigma://techniques` | All ATT&CK technique IDs with rule counts |
+| `sigma://tactics` | All ATT&CK tactics with display names and rule counts |
+| `sigma://metadata` | Build metadata (source commit, build time, rule count) |
+
+Agents can read these resources to discover valid filter values before querying tools.
 
 ## Extracted fields
 
@@ -86,6 +114,7 @@ Project-scoped `.mcp.json` example:
 
 ## Notes on licensing
 
-- Sigma repository content is generally under **Detection Rule License (DRL)**.
-- Some rules may carry explicit per-rule `license` metadata (for example MIT).
+- **Server code** (this repository): [Apache-2.0](LICENSE)
+- **Sigma rule content** is generally under **Detection Rule License (DRL)**.
+- Some rules carry explicit per-rule `license` metadata (for example MIT).
 - This project stores the per-rule value when present, otherwise defaults to `DRL`.
