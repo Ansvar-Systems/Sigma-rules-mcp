@@ -1,0 +1,47 @@
+{
+  "manifest_version": "0.3",
+  "name": "sigma-rules-mcp",
+  "display_name": "Sigma Rules MCP Server",
+  "version": "0.1.0",
+  "description": "MCP server for SigmaHQ rules with full-text search, ATT&CK mapping, and logsource filtering",
+  "author": {
+    "name": "Ansvar Systems",
+    "email": "hello@ansvar.eu",
+    "url": "https://ansvar.eu"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ansvar-Systems/sigma-rules-mcp"
+  },
+  "homepage": "https://github.com/Ansvar-Systems/sigma-rules-mcp",
+  "keywords": [
+    "mcp",
+    "sigma",
+    "detection-rules",
+    "mitre-attack",
+    "security"
+  ],
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/dist/index.js"],
+      "env": {}
+    }
+  },
+  "tools": [
+    { "name": "search_rules" },
+    { "name": "get_rule" },
+    { "name": "list_by_technique" },
+    { "name": "list_by_logsource" },
+    { "name": "get_rule_statistics" }
+  ],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=18"
+    }
+  }
+}

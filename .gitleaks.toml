@@ -1,0 +1,9 @@
+title = "Sigma Rules MCP gitleaks config"
+
+[allowlist]
+description = "Allow generated and binary artifacts"
+paths = [
+  '''data/sigma_rules.db''',
+  '''coverage/''',
+  '''dist/'''
+]
