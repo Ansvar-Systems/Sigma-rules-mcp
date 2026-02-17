@@ -46,7 +46,7 @@ export interface DatabaseStats {
 
 export function getDatabaseStats(): DatabaseStats {
   const database = getDatabase();
-  return database.prepare<DatabaseStats>(`
+  const result = database.prepare<DatabaseStats>(`
     SELECT
       (SELECT COUNT(*) FROM rules) AS total_rules,
       (SELECT COUNT(DISTINCT rule_id) FROM rule_techniques) AS rules_with_techniques,
@@ -68,7 +68,13 @@ export function getDatabaseStats(): DatabaseStats {
         FROM rules
         WHERE logsource_category IS NOT NULL AND logsource_category <> ''
       ) AS unique_logsource_categories
-  `).get() as DatabaseStats;
+  `).get();
+
+  if (!result) {
+    throw new Error('Failed to retrieve database statistics: no rows returned');
+  }
+
+  return result;
 }
 
 export interface DatabaseMetadata {
