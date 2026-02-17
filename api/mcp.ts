@@ -4,11 +4,14 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ReadResourceRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { copyFileSync, existsSync, rmSync, statSync } from 'fs';
 import { join } from 'path';
 
 import { TOOLS, handleToolCall, SERVER_INSTRUCTIONS } from '../src/tools/definitions.js';
+import { RESOURCES, handleResourceRead } from '../src/resources/definitions.js';
 import { closeDatabase } from '../src/database/db.js';
 
 const SOURCE_DB = process.env.SIGMA_RULES_DB_PATH || join(process.cwd(), 'data', 'sigma_rules.db');
@@ -42,7 +45,7 @@ function createServer(): Server {
       version: '0.1.0',
     },
     {
-      capabilities: { tools: {} },
+      capabilities: { tools: {}, resources: {} },
       instructions: SERVER_INSTRUCTIONS,
     }
   );
@@ -59,6 +62,18 @@ function createServer(): Server {
     }
 
     return handleToolCall(name, args as Record<string, unknown>);
+  });
+
+  server.setRequestHandler(ListResourcesRequestSchema, async () => {
+    return { resources: RESOURCES };
+  });
+
+  server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+    try {
+      return handleResourceRead(request.params.uri);
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : String(error));
+    }
   });
 
   return server;

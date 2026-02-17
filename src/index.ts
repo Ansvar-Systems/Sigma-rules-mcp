@@ -5,10 +5,13 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ReadResourceRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 
 import { getDatabase, closeDatabase } from './database/db.js';
 import { TOOLS, handleToolCall, SERVER_INSTRUCTIONS } from './tools/definitions.js';
+import { RESOURCES, handleResourceRead } from './resources/definitions.js';
 
 const SERVER_NAME = 'sigma-rules-mcp';
 const SERVER_VERSION = '0.1.0';
@@ -21,6 +24,7 @@ const server = new Server(
   {
     capabilities: {
       tools: {},
+      resources: {},
     },
     instructions: SERVER_INSTRUCTIONS,
   }
@@ -53,6 +57,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       ],
       isError: true,
     };
+  }
+});
+
+server.setRequestHandler(ListResourcesRequestSchema, async () => {
+  return { resources: RESOURCES };
+});
+
+server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+  try {
+    return handleResourceRead(request.params.uri);
+  } catch (error) {
+    throw new Error(error instanceof Error ? error.message : String(error));
   }
 });
 
