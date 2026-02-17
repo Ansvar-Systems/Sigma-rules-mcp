@@ -1,0 +1,27 @@
+schema_version: "1.0"
+mcp_name: "Sigma Rules MCP"
+jurisdiction: "International"
+
+sources:
+  - name: "SigmaHQ Detection Rules"
+    authority: "SigmaHQ Community"
+    official_portal: "https://github.com/SigmaHQ/sigma"
+    canonical_identifier: "N/A"
+    retrieval_method: "BULK_DOWNLOAD"
+    api_documentation: "N/A"
+    update_frequency: "weekly"
+    last_ingested: "2026-02-17"
+    license_or_terms:
+      type: "Detection Rule License (DRL)"
+      url: "https://github.com/SigmaHQ/sigma/blob/master/LICENSE.Detection.Rules.md"
+      summary: "Free for internal use and sharing; commercial products must attribute SigmaHQ"
+    coverage:
+      scope: "All YAML rules under SigmaHQ/sigma/rules/ — covers Windows, Linux, macOS, cloud, network, and application log sources with MITRE ATT&CK technique mappings"
+      limitations: "Does not include rules from third-party Sigma rule repositories or private rule sets. Rule quality varies by contributor."
+    languages:
+      - "en"
+
+data_freshness:
+  automated_checks: true
+  check_frequency: "weekly"
+  last_verified: "2026-02-17"
