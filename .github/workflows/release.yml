@@ -37,7 +37,7 @@ jobs:
         run: npm test
 
       - name: Generate SBOM
-        uses: anchore/sbom-action@v0
+        uses: anchore/sbom-action@61119d458adab75f756bc0b9e4bde25725f86a7a # v0.17.2
         with:
           artifact-name: sbom.cdx.json
           format: cyclonedx-json
@@ -49,7 +49,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@c062e08bd532815e2082a07b740f3f7c946408a2 # v2.2.1
         with:
           files: sbom.cdx.json
           generate_release_notes: true

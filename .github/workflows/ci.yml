@@ -105,7 +105,7 @@ jobs:
         run: npm audit --audit-level=critical --omit=dev
 
       - name: Generate SBOM
-        uses: anchore/sbom-action@v0
+        uses: anchore/sbom-action@61119d458adab75f756bc0b9e4bde25725f86a7a # v0.17.2
         with:
           artifact-name: sbom.cdx.json
           format: cyclonedx-json
