@@ -6,52 +6,93 @@ import { listByTechnique } from './list-by-technique.js';
 import { listByLogsource } from './list-by-logsource.js';
 import { getRuleStatistics } from './get-rule-statistics.js';
 
-export const SERVER_INSTRUCTIONS = `Sigma Rules MCP exposes the full SigmaHQ rule corpus in SQLite for fast retrieval.
+export const SERVER_INSTRUCTIONS = `Sigma Rules MCP — Expert Detection Engineering Interface
 
-Recommended workflow:
-1. search_rules: find relevant detections by title/description keywords.
-2. get_rule: fetch full YAML and raw detection logic for one rule.
-3. list_by_technique: pivot from ATT&CK technique IDs (Txxxx) into mapped Sigma rules.
-4. list_by_logsource: filter by product/service/category logsource dimensions.
-5. get_rule_statistics: inspect ATT&CK tactic coverage and dataset-level stats.
+This MCP server exposes the full SigmaHQ community detection rule corpus (~3,100+ rules) in a queryable SQLite database with full-text search.
 
-Dataset notes:
-- Source: SigmaHQ/sigma rules/*.yml
-- ATT&CK techniques parsed from tags like attack.t1059 or attack.t1059.001
-- ATT&CK tactics parsed from tags like attack.execution, attack.initial-access
-- Rule-level license keeps explicit rule metadata; defaults to DRL when unspecified`;
+## What are Sigma rules?
+Sigma is a generic and open signature format for SIEM systems. Each rule describes a detection pattern using structured YAML:
+- logsource: defines which log data to query (product/service/category)
+- detection: defines the matching logic (field conditions, boolean operators, aggregations)
+- level: indicates severity — informational < low < medium < high < critical
+- status: indicates maturity — experimental → test → stable (deprecated/unsupported for archived rules)
+
+## ATT&CK mapping
+Rules are tagged with MITRE ATT&CK technique IDs (e.g., T1059 = Command and Scripting Interpreter, T1059.001 = PowerShell). Techniques are grouped into 14 tactics representing adversary goals:
+reconnaissance → resource-development → initial-access → execution → persistence → privilege-escalation → defense-evasion → credential-access → discovery → lateral-movement → collection → command-and-control → exfiltration → impact
+
+## Logsource hierarchy
+- product: OS or platform (windows, linux, macos, aws, azure, gcp)
+- service: specific log source within product (sysmon, security, powershell, cloudtrail)
+- category: generic log type across products (process_creation, file_event, network_connection)
+
+## Recommended workflows
+
+Find detections for a threat:
+1. search_rules("mimikatz") → find relevant rules by keyword
+2. get_rule(id) → read full detection logic and YAML
+
+Map ATT&CK coverage gaps:
+1. get_rule_statistics() → see tactic/technique coverage
+2. list_by_technique("T1059") → drill into specific techniques
+3. get_rule(id) → examine individual detection logic
+
+Audit log source coverage:
+1. Browse sigma://logsources/products resource → see available products
+2. list_by_logsource(product="windows") → list rules for a product
+3. get_rule(id) → read detection details
+
+Build detection content:
+1. search_rules with filters (status="stable", level="high") → find production-ready rules
+2. get_rule(id) → get complete YAML for deployment
+3. Use detection_yaml field for SIEM query translation
+
+## Available resources
+Browse sigma://logsources/products, sigma://logsources/services, sigma://logsources/categories, sigma://techniques, sigma://tactics, and sigma://metadata for dataset exploration before querying.
+
+## Dataset notes
+- Source: SigmaHQ/sigma rules/*.yml (auto-refreshed weekly)
+- Detection Rule License (DRL) unless rule specifies otherwise
+- ATT&CK techniques parsed from tags (attack.t1059, attack.t1059.001)
+- ATT&CK tactics parsed from tags (attack.execution, attack.initial-access)`;
 
 export const TOOLS: Tool[] = [
   {
     name: 'search_rules',
     description:
-      'Full-text search across Sigma rule titles and descriptions. Supports optional filters for logsource and rule metadata.',
+      'Full-text search across Sigma rule titles and descriptions. Supports SQLite FTS5 syntax (AND, OR, NOT, prefix*). Returns matching rules with relevance-ranked snippets. Supports optional filters for status, level, and logsource dimensions.',
     inputSchema: {
       type: 'object',
       properties: {
         query: {
           type: 'string',
-          description: 'Text query for title/description search',
+          description:
+            "FTS5 search query. Examples: 'mimikatz', 'lateral movement', 'powershell AND execution', 'process_creation'. Supports AND/OR/NOT operators and prefix* wildcards.",
         },
         status: {
           type: 'string',
-          description: 'Optional Sigma status filter (e.g., stable, test, experimental)',
+          enum: ['stable', 'test', 'experimental', 'deprecated', 'unsupported'],
+          description: 'Optional Sigma status filter',
         },
         level: {
           type: 'string',
-          description: 'Optional rule level filter (e.g., low, medium, high, critical)',
+          enum: ['informational', 'low', 'medium', 'high', 'critical'],
+          description: 'Optional rule level filter',
         },
         product: {
           type: 'string',
-          description: 'Optional logsource product filter (e.g., windows, linux)',
+          description:
+            'Logsource product filter. Common values: windows, linux, macos, aws, azure, gcp, m365',
         },
         service: {
           type: 'string',
-          description: 'Optional logsource service filter (e.g., sysmon, security)',
+          description:
+            'Logsource service filter. Common values: sysmon, security, powershell, cloudtrail, auditd',
         },
         category: {
           type: 'string',
-          description: 'Optional logsource category filter (e.g., process_creation)',
+          description:
+            'Logsource category filter. Common values: process_creation, file_event, network_connection, image_load, registry_event',
         },
         limit: {
           type: 'number',
@@ -70,13 +111,14 @@ export const TOOLS: Tool[] = [
   },
   {
     name: 'get_rule',
-    description: 'Return one Sigma rule by ID, including full YAML and raw detection block.',
+    description:
+      'Retrieve a single Sigma rule by its UUID. Returns complete rule data including: title, status, level, author, date, logsource (product/service/category), tags, attack_techniques (ATT&CK IDs), attack_tactics, detection_yaml (raw detection logic block), full_yaml (complete rule YAML), falsepositives, and metadata.',
     inputSchema: {
       type: 'object',
       properties: {
         rule_id: {
           type: 'string',
-          description: 'Sigma rule UUID id field',
+          description: "Sigma rule UUID (e.g., '5af54681-df95-4c26-854f-2565e13cfab0')",
         },
       },
       required: ['rule_id'],
@@ -85,13 +127,14 @@ export const TOOLS: Tool[] = [
   {
     name: 'list_by_technique',
     description:
-      'List all Sigma rules mapped to an ATT&CK technique. Accepts values like T1059, t1059, attack.t1059, T1059.001.',
+      'List all Sigma rules mapped to a MITRE ATT&CK technique ID. Returns rule summaries (id, title, status, level, logsource). Accepts flexible input formats: T1059, t1059, attack.t1059, T1059.001.',
     inputSchema: {
       type: 'object',
       properties: {
         technique_id: {
           type: 'string',
-          description: 'ATT&CK technique id (e.g., T1059 or T1059.001)',
+          description:
+            'MITRE ATT&CK technique ID. Formats accepted: T1059, t1059, attack.t1059, T1059.001. Browse sigma://techniques resource for all available technique IDs.',
         },
         limit: {
           type: 'number',
@@ -111,21 +154,24 @@ export const TOOLS: Tool[] = [
   {
     name: 'list_by_logsource',
     description:
-      'List Sigma rules by logsource product/service/category. At least one filter is required.',
+      'List Sigma rules filtered by logsource product, service, and/or category. At least one filter MUST be provided. Returns rule summaries (id, title, status, level, logsource). Browse sigma://logsources/* resources for valid filter values.',
     inputSchema: {
       type: 'object',
       properties: {
         product: {
           type: 'string',
-          description: 'Logsource product (e.g., windows, linux)',
+          description:
+            'Logsource product. Common values: windows, linux, macos, aws, azure, gcp. Browse sigma://logsources/products for all values.',
         },
         service: {
           type: 'string',
-          description: 'Logsource service (e.g., sysmon)',
+          description:
+            'Logsource service. Common values: sysmon, security, powershell, cloudtrail, auditd. Browse sigma://logsources/services for all values.',
         },
         category: {
           type: 'string',
-          description: 'Logsource category (e.g., process_creation)',
+          description:
+            'Logsource category. Common values: process_creation, file_event, network_connection, image_load. Browse sigma://logsources/categories for all values.',
         },
         limit: {
           type: 'number',
@@ -143,7 +189,8 @@ export const TOOLS: Tool[] = [
   },
   {
     name: 'get_rule_statistics',
-    description: 'Return dataset statistics, including ATT&CK tactic coverage across Sigma rules.',
+    description:
+      'Return comprehensive dataset statistics: total rule count, rules with ATT&CK mappings, unique techniques/tactics count, ATT&CK tactic coverage table (rules and techniques per tactic), top 20 logsource products/services/categories by rule count, license distribution, and build metadata (source commit, build time, ingested rule count).',
     inputSchema: {
       type: 'object',
       properties: {},
