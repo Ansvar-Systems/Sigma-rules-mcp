@@ -5,6 +5,7 @@ import { getRule } from './get-rule.js';
 import { listByTechnique } from './list-by-technique.js';
 import { listByLogsource } from './list-by-logsource.js';
 import { getRuleStatistics } from './get-rule-statistics.js';
+import { listSources } from './list-sources.js';
 
 export const SERVER_INSTRUCTIONS = `Sigma Rules MCP — Expert Detection Engineering Interface
 
@@ -47,6 +48,9 @@ Build detection content:
 2. get_rule(id) → get complete YAML for deployment
 3. Use detection_yaml field for SIEM query translation
 
+Inspect data provenance:
+1. list_sources() → see dataset source, license, last ingest timestamp, and source commit
+
 ## Available resources
 Browse sigma://logsources/products, sigma://logsources/services, sigma://logsources/categories, sigma://techniques, sigma://tactics, and sigma://metadata for dataset exploration before querying.
 
@@ -66,31 +70,37 @@ export const TOOLS: Tool[] = [
       properties: {
         query: {
           type: 'string',
+          maxLength: 500,
           description:
             "FTS5 search query. Examples: 'mimikatz', 'lateral movement', 'powershell AND execution', 'process_creation'. Supports AND/OR/NOT operators and prefix* wildcards.",
         },
         status: {
           type: 'string',
+          maxLength: 50,
           enum: ['stable', 'test', 'experimental', 'deprecated', 'unsupported'],
           description: 'Optional Sigma status filter',
         },
         level: {
           type: 'string',
+          maxLength: 50,
           enum: ['informational', 'low', 'medium', 'high', 'critical'],
           description: 'Optional rule level filter',
         },
         product: {
           type: 'string',
+          maxLength: 100,
           description:
             'Logsource product filter. Common values: windows, linux, macos, aws, azure, gcp, m365',
         },
         service: {
           type: 'string',
+          maxLength: 100,
           description:
             'Logsource service filter. Common values: sysmon, security, powershell, cloudtrail, auditd',
         },
         category: {
           type: 'string',
+          maxLength: 100,
           description:
             'Logsource category filter. Common values: process_creation, file_event, network_connection, image_load, registry_event',
         },
@@ -118,6 +128,7 @@ export const TOOLS: Tool[] = [
       properties: {
         rule_id: {
           type: 'string',
+          maxLength: 200,
           description: "Sigma rule UUID (e.g., '5af54681-df95-4c26-854f-2565e13cfab0')",
         },
       },
@@ -133,6 +144,7 @@ export const TOOLS: Tool[] = [
       properties: {
         technique_id: {
           type: 'string',
+          maxLength: 200,
           description:
             'MITRE ATT&CK technique ID. Formats accepted: T1059, t1059, attack.t1059, T1059.001. Browse sigma://techniques resource for all available technique IDs.',
         },
@@ -160,16 +172,19 @@ export const TOOLS: Tool[] = [
       properties: {
         product: {
           type: 'string',
+          maxLength: 100,
           description:
             'Logsource product. Common values: windows, linux, macos, aws, azure, gcp. Browse sigma://logsources/products for all values.',
         },
         service: {
           type: 'string',
+          maxLength: 100,
           description:
             'Logsource service. Common values: sysmon, security, powershell, cloudtrail, auditd. Browse sigma://logsources/services for all values.',
         },
         category: {
           type: 'string',
+          maxLength: 100,
           description:
             'Logsource category. Common values: process_creation, file_event, network_connection, image_load. Browse sigma://logsources/categories for all values.',
         },
@@ -196,6 +211,15 @@ export const TOOLS: Tool[] = [
       properties: {},
     },
   },
+  {
+    name: 'list_sources',
+    description:
+      'Return data provenance information for all datasets backing this MCP server. Shows source name, authority, URL, license, update frequency, last ingest timestamp, source commit hash, and rule count.',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+    },
+  },
 ];
 
 interface ToolResult {
@@ -217,10 +241,25 @@ function errorResponse(message: string): ToolResult {
   };
 }
 
+/** Runtime length limits for string parameters that hit the database. */
+const MAX_LENGTHS: Record<string, number> = {
+  query: 500,
+  rule_id: 200,
+  technique_id: 200,
+};
+
 export async function handleToolCall(
   name: string,
   args: Record<string, unknown>
 ): Promise<ToolResult> {
+  // Runtime length enforcement for database-bound string parameters
+  for (const [param, maxLen] of Object.entries(MAX_LENGTHS)) {
+    const value = args[param];
+    if (typeof value === 'string' && value.length > maxLen) {
+      return errorResponse(`${param} exceeds maximum length of ${maxLen} characters`);
+    }
+  }
+
   switch (name) {
     case 'search_rules': {
       const query = args.query;
@@ -301,6 +340,10 @@ export async function handleToolCall(
 
     case 'get_rule_statistics': {
       return jsonResponse(getRuleStatistics());
+    }
+
+    case 'list_sources': {
+      return jsonResponse(listSources());
     }
 
     default:

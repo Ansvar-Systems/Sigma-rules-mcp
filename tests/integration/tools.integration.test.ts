@@ -141,6 +141,22 @@ describe('MCP tools integration', () => {
     expect(payload.tactic_coverage.length).toBeGreaterThanOrEqual(10);
   });
 
+  it('list_sources returns data provenance', async () => {
+    const result = await handleToolCall('list_sources', {});
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.sources).toBeDefined();
+    expect(payload.sources.length).toBeGreaterThanOrEqual(1);
+
+    const source = payload.sources[0];
+    expect(source.name).toBe('SigmaHQ Detection Rules');
+    expect(source.url).toContain('github.com/SigmaHQ');
+    expect(source.license).toBeDefined();
+    expect(source.rule_count).toBeGreaterThan(0);
+    expect(source.last_ingested).toBeDefined();
+    expect(source.source_commit).toBeDefined();
+  });
+
   it('returns errors for invalid requests', async () => {
     const missingRuleId = (await handleToolCall('get_rule', {})) as ToolCallResult;
     expect(missingRuleId.isError).toBe(true);

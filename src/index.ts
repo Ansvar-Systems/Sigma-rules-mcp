@@ -12,9 +12,7 @@ import {
 import { getDatabase, closeDatabase } from './database/db.js';
 import { TOOLS, handleToolCall, SERVER_INSTRUCTIONS } from './tools/definitions.js';
 import { RESOURCES, handleResourceRead } from './resources/definitions.js';
-
-const SERVER_NAME = 'sigma-rules-mcp';
-const SERVER_VERSION = '0.2.0';
+import { SERVER_NAME, SERVER_VERSION } from './version.js';
 
 const server = new Server(
   {

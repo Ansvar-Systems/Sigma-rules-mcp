@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-const SERVER_VERSION = '0.2.0';
+import { SERVER_VERSION, MCP_SDK_VERSION } from '../src/version.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse): Promise<void> {
   if (req.method && req.method !== 'GET') {
@@ -15,13 +14,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
     build_timestamp: process.env.VERCEL_GIT_COMMIT_DATE || null,
     node_version: process.version,
     transport: ['stdio', 'streamable-http'],
-    mcp_sdk_version: '1.25.3',
+    mcp_sdk_version: MCP_SDK_VERSION,
     capabilities: [
       'search',
       'rule_retrieval',
       'technique_lookup',
       'logsource_lookup',
       'statistics',
+      'data_provenance',
     ],
     tier: 'free',
     source_schema_version: '1.0',

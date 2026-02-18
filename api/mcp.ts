@@ -13,6 +13,7 @@ import { join } from 'path';
 import { TOOLS, handleToolCall, SERVER_INSTRUCTIONS } from '../src/tools/definitions.js';
 import { RESOURCES, handleResourceRead } from '../src/resources/definitions.js';
 import { closeDatabase } from '../src/database/db.js';
+import { SERVER_NAME, SERVER_VERSION } from '../src/version.js';
 
 const SOURCE_DB = process.env.SIGMA_RULES_DB_PATH || join(process.cwd(), 'data', 'sigma_rules.db');
 const TMP_DB = '/tmp/sigma_rules.db';
@@ -40,8 +41,8 @@ function ensureDatabaseInTmp(): void {
 function createServer(): Server {
   const server = new Server(
     {
-      name: 'sigma-rules-mcp',
-      version: '0.2.0',
+      name: SERVER_NAME,
+      version: SERVER_VERSION,
     },
     {
       capabilities: { tools: {}, resources: {} },
@@ -91,8 +92,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
 
   if (req.method === 'GET') {
     res.status(200).json({
-      name: 'sigma-rules-mcp',
-      version: '0.2.0',
+      name: SERVER_NAME,
+      version: SERVER_VERSION,
       protocol: 'mcp-streamable-http',
     });
     return;

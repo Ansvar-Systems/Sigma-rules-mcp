@@ -51,3 +51,33 @@ export function safeJsonParse<T>(value: string | null, fallback: T): T {
     return fallback;
   }
 }
+
+/**
+ * Sanitize user input for FTS5 MATCH queries.
+ * Strips dangerous syntax while preserving AND/OR/NOT, prefix*, and "phrases".
+ */
+export function sanitizeFtsQuery(input: string): string {
+  let q = input.trim();
+  if (!q) return '';
+
+  // Strip NEAR(...) operator — not user-facing
+  q = q.replace(/NEAR\s*\(/gi, '').replace(/,\s*\d+\s*\)/g, ')');
+
+  // Strip column filter syntax (word: or word :)
+  q = q.replace(/\b\w+\s*:/g, '');
+
+  // Balance double quotes — strip all if unbalanced
+  const quoteCount = (q.match(/"/g) || []).length;
+  if (quoteCount % 2 !== 0) {
+    q = q.replace(/"/g, '');
+  }
+
+  // Strip parentheses if unbalanced
+  const openParens = (q.match(/\(/g) || []).length;
+  const closeParens = (q.match(/\)/g) || []).length;
+  if (openParens !== closeParens) {
+    q = q.replace(/[()]/g, '');
+  }
+
+  return q.trim();
+}

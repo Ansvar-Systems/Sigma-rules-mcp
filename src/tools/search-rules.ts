@@ -1,5 +1,5 @@
 import { getDatabase } from '../database/db.js';
-import { RuleSummary } from './utils.js';
+import { RuleSummary, sanitizeFtsQuery } from './utils.js';
 
 export interface SearchRulesParams {
   query: string;
@@ -97,7 +97,7 @@ export function searchRules(params: SearchRulesParams): SearchRuleResult[] {
       `
       )
       .all({
-        query: params.query.trim(),
+        query: sanitizeFtsQuery(params.query),
         limit,
         offset,
         ...values,

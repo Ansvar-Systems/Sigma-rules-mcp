@@ -15,6 +15,7 @@ export function getDatabase(): InstanceType<typeof Database> {
       db = new Database(DB_PATH, { readonly: true, fileMustExist: true });
       db.pragma('cache_size = -64000');
       db.pragma('temp_store = MEMORY');
+      db.pragma('journal_mode = DELETE');
     } catch (error) {
       throw new Error(
         `Database not found at ${DB_PATH}. Run "npm run build:db" to ingest Sigma rules.` +

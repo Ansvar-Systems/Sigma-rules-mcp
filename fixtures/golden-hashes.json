@@ -1,0 +1,31 @@
+{
+  "generated_at": "2026-02-17T17:58:25.339Z",
+  "description": "SHA-256 hashes of sampled Sigma rule full_yaml for drift detection",
+  "hashes": [
+    {
+      "id": "999bff6d-dc15-44c9-9f5c-e1051bfc86e1",
+      "title": "Nslookup PowerShell Download Cradle",
+      "sha256": "201b6e3b5f27ac58c64664bd3819c9146b5debce9ab7da63ccfb46add0bf252e"
+    },
+    {
+      "id": "d2d642d7-b393-43fe-bae4-e81ed5915c4b",
+      "title": "Scheduled Task/Job At",
+      "sha256": "07b42b8e62025f1cf82f51d7042fd6f06818bef7cbf4f3fed4dd892816d8ac9d"
+    },
+    {
+      "id": "f239b326-2f41-4d6b-9dfa-c846a60ef505",
+      "title": "Password Dumper Remote Thread in LSASS",
+      "sha256": "edd8de9c4c4a509db4fe379624cd4badc34cfe6aeb305196f9d429ac8cbd24fd"
+    },
+    {
+      "id": "a4b25073-8947-489c-a8dd-93b41c23f26d",
+      "title": "Windows LAPS Credential Dump From Entra ID",
+      "sha256": "14a8472173d5842b2e7b7a4ef5d2fa5443985d233e079509c53953c818f1713a"
+    },
+    {
+      "id": "9c8acf1a-cbf9-4db6-b63c-74baabe03e59",
+      "title": "NTLM Brute Force",
+      "sha256": "bd2bfaa433093831880804c30c3772a07745ed427e71019deb94d5d0eb2513ea"
+    }
+  ]
+}

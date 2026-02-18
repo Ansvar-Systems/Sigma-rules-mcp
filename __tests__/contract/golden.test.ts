@@ -1,4 +1,5 @@
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
+import { createHash } from 'crypto';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { afterAll, describe, expect, it } from 'vitest';
@@ -102,3 +103,39 @@ describe('Contract tests (golden-tests.json)', () => {
     });
   }
 });
+
+const goldenHashesPath = join(__dirname, '../../fixtures/golden-hashes.json');
+
+if (existsSync(goldenHashesPath)) {
+  interface GoldenHash {
+    id: string;
+    title: string;
+    sha256: string;
+  }
+
+  interface GoldenHashesFile {
+    hashes: GoldenHash[];
+  }
+
+  const goldenHashes: GoldenHashesFile = JSON.parse(readFileSync(goldenHashesPath, 'utf-8'));
+
+  describe('Golden hash drift detection', () => {
+    afterAll(() => {
+      closeDatabase();
+    });
+
+    for (const entry of goldenHashes.hashes) {
+      it(`rule ${entry.id} (${entry.title}) matches golden hash`, async () => {
+        const result = (await handleToolCall('get_rule', {
+          rule_id: entry.id,
+        })) as ToolCallResult;
+
+        expect(result.isError).toBeFalsy();
+
+        const payload = JSON.parse(result.content[0].text);
+        const hash = createHash('sha256').update(payload.full_yaml, 'utf-8').digest('hex');
+        expect(hash).toBe(entry.sha256);
+      });
+    }
+  });
+}

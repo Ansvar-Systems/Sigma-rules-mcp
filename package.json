@@ -31,6 +31,8 @@
     "lint": "eslint src/ api/ scripts/",
     "format": "prettier --write 'src/**/*.ts' 'api/**/*.ts' 'scripts/**/*.ts'",
     "format:check": "prettier --check 'src/**/*.ts' 'api/**/*.ts' 'scripts/**/*.ts'",
+    "generate:hashes": "node --import tsx scripts/generate-golden-hashes.ts",
+    "verify:data": "node --import tsx scripts/verify-data-accuracy.ts",
     "ci": "npm run check:db-size && npm run build && npm test"
   },
   "keywords": [

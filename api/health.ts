@@ -1,11 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { copyFileSync, existsSync, statSync } from 'fs';
 import { join } from 'path';
+import { SERVER_VERSION } from '../src/version.js';
 
 const SOURCE_DB = process.env.SIGMA_RULES_DB_PATH || join(process.cwd(), 'data', 'sigma_rules.db');
 const TMP_DB = '/tmp/sigma_rules.db';
 const MAX_AGE_DAYS = 14;
-const SERVER_VERSION = '0.2.0';
 const startTime = Date.now();
 
 function ensureDb(): boolean {
@@ -75,6 +75,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse): 
         'technique_lookup',
         'logsource_lookup',
         'statistics',
+        'data_provenance',
       ],
       tier: 'free',
     });
