@@ -4,3 +4,4 @@ coverage/
 *.log
 data/*.db.lock/
 /tmp/
+.claude/
