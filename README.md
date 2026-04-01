@@ -5,6 +5,33 @@
 [![npm](https://img.shields.io/npm/v/@ansvar/sigma-rules-mcp)](https://www.npmjs.com/package/@ansvar/sigma-rules-mcp)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
+
+### Public Endpoint (Streamable HTTP)
+
+Connect from any MCP client (Claude Desktop, ChatGPT, Cursor, VS Code, GitHub Copilot):
+
+```
+https://mcp.ansvar.eu/sigma-rules/mcp
+```
+
+**Claude Code:**
+```bash
+claude mcp add sigma-rules --transport http https://mcp.ansvar.eu/sigma-rules/mcp
+```
+
+**Claude Desktop / Cursor** (`claude_desktop_config.json`):
+```json
+{
+  "mcpServers": {
+    "sigma-rules": {
+      "type": "url",
+      "url": "https://mcp.ansvar.eu/sigma-rules/mcp"
+    }
+  }
+}
+```
+
+No authentication required. See [all Ansvar MCP endpoints](https://github.com/Ansvar-Systems/Ansvar-Architecture-Documentation/blob/main/docs/mcp-remote-access.md).
 TypeScript MCP server that ingests the full [SigmaHQ/sigma](https://github.com/SigmaHQ/sigma) rule corpus into SQLite (WASM backend) and exposes focused tooling for detection engineering workflows.
 
 ## Scope
