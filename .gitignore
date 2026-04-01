@@ -2,6 +2,9 @@ node_modules/
 dist/
 coverage/
 *.log
-data/*.db.lock/
+# data/*.db  # uncomment to exclude DB from git
 /tmp/
 .claude/
+.env
+.env.*
+.DS_Store
