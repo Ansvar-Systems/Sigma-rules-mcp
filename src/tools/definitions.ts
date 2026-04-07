@@ -1,5 +1,6 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
+import { buildCitation } from '../citation.js';
 import { searchRules } from './search-rules.js';
 import { getRule } from './get-rule.js';
 import { listByTechnique } from './list-by-technique.js';
@@ -292,7 +293,15 @@ export async function handleToolCall(
         return errorResponse(`Rule not found: ${ruleId}`);
       }
 
-      return jsonResponse(rule);
+      return jsonResponse({
+        ...rule,
+        _citation: buildCitation(
+          rule.id,
+          `Sigma: ${rule.title}`,
+          'get_rule',
+          { rule_id: rule.id },
+        ),
+      });
     }
 
     case 'list_by_technique': {
