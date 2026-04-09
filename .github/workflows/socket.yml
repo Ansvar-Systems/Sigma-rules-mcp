@@ -19,6 +19,6 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Socket Security analysis
-        uses: SocketDev/action@4337a545deecc20f19a909e52db7a2f6ba292f42 # v1
+        uses: SocketDev/action@937f824ec476dfd164d4a4d9995751427b0be143 # v1
         with:
           mode: firewall
